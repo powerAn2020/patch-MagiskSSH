@@ -54,5 +54,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Triggering build-magisk-ssh.yml..."
-          gh workflow run build-magisk-ssh.yml
+          gh workflow run build-magisk-ssh.yml --repo "$GITHUB_REPOSITORY"
           echo "Build workflow triggered successfully."
