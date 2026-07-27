@@ -114,8 +114,8 @@ jobs:
               -e 's|sysconfdir=/data/ssh|sysconfdir=/data/adb/ssh|g' \
               -e 's|piddir=/data/ssh|piddir=/data/adb/ssh|g' \
               "$f"
-            # Change utmp and wtmp to disabled, but explicitly redirect lastlog to module path
-            sed -i 's|--disable-wtmpx|--disable-wtmpx --disable-pututline --disable-pututxline --with-lastlog=/data/adb/ssh/lastlog|g' "$f"
+            # Override lastlog/btmp paths via CPPFLAGS (--with-lastlog is ignored by OpenSSH 10.x)
+            sed -i 's|-DHAVE__RES_EXTERN=1"|-DHAVE__RES_EXTERN=1 -D_PATH_LASTLOG=\\"/data/adb/ssh/lastlog\\" -D_PATH_BTMP=\\"/data/adb/ssh/btmp\\""|' "$f"
             echo "  Patched configure flags in: $f"
           done
 

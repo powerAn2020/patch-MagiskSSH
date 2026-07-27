@@ -184,18 +184,21 @@ function mockExec(cmd: string): { errno: number; stdout: string; stderr: string 
         return { errno: 0, stdout: `{"errno":0,"stdout":"${keys.replace(/\n/g, '\\n')}","stderr":""}`, stderr: '' };
     }
     if (cmd.includes('read_log_from')) {
-        const lines = Array.from({ length: 5 }, (_, i) => `[mock] sshd log line ${i + 1}`).join('\\n');
+        const logLines = Array.from({ length: 5 }, (_, i) => `[mock] sshd log line ${i + 1}`).join('\n');
+        const content = `10\n${logLines}`;
+        const b64 = btoa(unescape(encodeURIComponent(content)));
         return {
             errno: 0,
-            stdout: `{"errno":0,"stdout":"10\\n${lines}","stderr":""}`,
+            stdout: `{"errno":0,"stdout":"${b64}","stderr":""}`,
             stderr: '',
         };
     }
     if (cmd.includes('read_log')) {
-        const lines = Array.from({ length: 10 }, (_, i) => `[mock] sshd log line ${i + 1}`).join('\\n');
+        const logLines = Array.from({ length: 10 }, (_, i) => `[mock] sshd log line ${i + 1}`).join('\n');
+        const b64 = btoa(unescape(encodeURIComponent(logLines)));
         return {
             errno: 0,
-            stdout: `{"errno":0,"stdout":"${lines}","stderr":""}`,
+            stdout: `{"errno":0,"stdout":"${b64}","stderr":""}`,
             stderr: '',
         };
     }

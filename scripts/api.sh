@@ -282,7 +282,7 @@ do_tail_log() {
 do_read_log() {
   if [ -f "$LOG_FILE" ]; then
     local content
-    content=$(tail -n 200 "$LOG_FILE")
+    content=$(tail -n 200 "$LOG_FILE" | base64)
     json_ok "$content"
   else
     json_ok ""
@@ -295,17 +295,16 @@ do_read_log() {
 do_read_log_from() {
   local start="${1:-1}"
   if [ ! -f "$LOG_FILE" ]; then
-    json_ok "0"
+    json_ok "$(printf '0' | base64)"
     return 0
   fi
   local total output
   total=$(wc -l < "$LOG_FILE" 2>/dev/null || echo 0)
   if [ "$start" -le "$total" ]; then
-    output=$(tail -n +"$start" "$LOG_FILE")
-    json_ok "${total}
-${output}"
+    output=$(printf '%s\n%s' "$total" "$(tail -n +"$start" "$LOG_FILE")" | base64)
+    json_ok "$output"
   else
-    json_ok "${total}"
+    json_ok "$(printf '%s' "$total" | base64)"
   fi
 }
 

@@ -26,9 +26,12 @@
     async function poll() {
         try {
             const res = await api("read_log_from", String(nextLine));
-            // res.stdout 是 "{"errno":0,"stdout":"total\nlines...","stderr":""}"
             const outer = JSON.parse(res.stdout);
-            const raw = outer.stdout || "";
+            const b64 = outer.stdout || "";
+            if (!b64.trim()) return;
+
+            // 后端返回 base64 编码的 "total\nlog_lines..."
+            const raw = decodeURIComponent(escape(atob(b64.trim())));
             const lines = raw.split("\n");
 
             if (lines.length === 0 || (lines.length === 1 && lines[0] === ""))
